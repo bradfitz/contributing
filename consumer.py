@@ -328,7 +328,7 @@ class LoginHandler(Handler):
     auth_request.addExtension(pape_request)
 
     parts = list(urlparse.urlparse(self.request.uri))
-    parts[2] = 'finish'
+    parts[2] = 's/finish'
     parts[4] = 'session_id=%d' % self.session.key().id()
     parts[5] = ''
     return_to = urlparse.urlunparse(parts)
@@ -378,9 +378,9 @@ class FinishHandler(Handler):
 
 # Map URLs to our RequestHandler subclasses above
 _URLS = [
-  ('/', FrontPage),
-  ('/login', LoginHandler),
-  ('/finish', FinishHandler),
+  ('/s/openid', FrontPage),
+  ('/s/login', LoginHandler),
+  ('/s/finish', FinishHandler),
 ]
 
 def main(argv):

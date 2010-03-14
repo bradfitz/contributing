@@ -11,5 +11,14 @@ handlers:
   login: required
   script: main.py
 
+- url: /s/openid
+  script: consumer.py
+
+- url: /s/login
+  script: consumer.py
+
+- url: /s/finish
+  script: consumer.py
+
 - url: .*
   script: main.py
