@@ -1,0 +1,19 @@
+<html>
+<head>
+  <title>Create project - Contributing</title>
+  <link rel='stylesheet' href='/static/style.css' type='text/css' />
+</head>
+  <body>
+    <h1>Contributing: Create Project</h1>
+
+    <p>Hello, <b>{{ user.email }}</b>.</p>
+
+    <p>Choose your URL.  You can't change this later.</p>
+
+    <form method='post' action='/s/create'>
+      <div style='margin: 1.5em 0 1.5em 3em'>http://contributing.appspot.com/<input type='text' name='project' size='15'></div>
+      <input type='submit' value='Create' />
+    </form>
+
+  </body>
+</html>

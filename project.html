@@ -1,0 +1,35 @@
+<html>
+<head>
+  <title>Contributing to {{ project.display_name|escape }}</title>
+  <link rel='stylesheet' href='/static/style.css' type='text/css' />
+</head>
+  <body>
+    <h1>Contributing to <em>{{ project.display_name|escape }}</em></h1>
+
+    <table cellpadding='10'>
+    <tr>
+      <td align=right>Project homepage:</td>
+      <td><a href="{{ project.home_page|escape }}">{{ project.home_page|escape }}</a></td>
+    </tr>
+    <tr>
+      <td align=right>Code repository:</td>
+      <td><a href="{{ project.code_repo|escape }}">{{ project.code_repo|escape }}</a></td>
+    </tr>
+    <tr>
+      <td align=right>Style guide:</td>
+      <td><a href="{{ project.style_guide|escape }}">{{ project.style_guide|escape }}</a></td>
+    </tr>
+    <tr valign='top'>
+      <td align=right>How to submit patches:</td>
+      <td>{{ project.how_to|escape }}</td>
+    </tr>
+    <tr valign='bottom'>
+      <td align=right>Maintainer of this<br/>metadata page:</td>
+      <td><a href="{{ project.style_guide|escape }}">{{ project.style_guide|escape }}</a></td>
+    </tr>
+
+    </table>
+
+
+  </body>
+</html>
