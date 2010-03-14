@@ -58,9 +58,15 @@ from openid.consumer import discover
 from openid.extensions import pape, sreg
 import fetcher
 import store
+import string
+import random
 
 # Set to True if stack traces should be shown in the browser, etc.
 _DEBUG = False
+
+
+def GenKeyName(length=8, chars=string.letters + string.digits):
+  return ''.join([random.choice(chars) for i in xrange(length)])
 
 
 class Session(db.Expando):
@@ -366,12 +372,18 @@ class FinishHandler(Handler):
     logging.debug('Login status %s for claimed_id %s' %
                   (response.status, self.session.claimed_id))
 
-    if self.session.store_and_display:
-      login = Login(status=response.status,
-                    claimed_id=self.session.claimed_id,
-                    server_url=self.session.server_url,
-                    session=self.session.key())
-      login.put()
+    if response.status != 'success':
+      self.render(locals())
+      return
+
+    session_id = GenKeyName(length=16)
+
+    login = Login(key_name=session_id,
+                  status=response.status,
+                  claimed_id=self.session.claimed_id,
+                  server_url=self.session.server_url,
+                  session=self.session.key())
+    login.put()
 
     self.render(locals())
 

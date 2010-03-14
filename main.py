@@ -26,6 +26,18 @@ from google.appengine.ext.webapp import util
 
 import models
 
+
+
+
+def GetCurrentUser(request):
+  """Returns a User entity (OpenID or Google) or None."""
+  user = users.get_current_user()
+  if user:
+    return user
+  session_id = self.request.cookies.get('session', '')
+  if not session_id:
+    return None
+  
   
 class MainHandler(webapp.RequestHandler):
 
