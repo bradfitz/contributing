@@ -42,6 +42,18 @@ class SiteHandler(webapp.RequestHandler):
     self.response.out.write("I'm a site page.")
 
 
+class LoginHandler(webapp.RequestHandler):
+
+  def get(self):
+    user = users.get_current_user()
+    google_login_url = users.create_login_url('/')
+    template_values = {
+      "user": user,
+      "google_login_url": google_login_url,
+    }
+    self.response.out.write(template.render("login.html", template_values))
+
+
 class CreateHandler(webapp.RequestHandler):
 
   def get(self):
@@ -98,6 +110,7 @@ def main():
   application = webapp.WSGIApplication([
       ('/', MainHandler),
       ('/s/create', CreateHandler),
+      ('/s/login', LoginHandler),
       ('/s/.*', SiteHandler),
       (r'/([a-z][a-z0-9\.\-]*[a-z0-9])/?', ProjectHandler),
       ],

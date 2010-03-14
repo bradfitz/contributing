@@ -8,13 +8,15 @@ handlers:
   static_dir: static
 
 - url: /s/create
-  login: required
+  script: main.py
+
+- url: /s/login
   script: main.py
 
 - url: /s/openid
   script: consumer.py
 
-- url: /s/login
+- url: /s/startopenid
   script: consumer.py
 
 - url: /s/finish

@@ -1,0 +1,30 @@
+<html>
+<head>
+  <title>Log in - Contributing</title>
+  <link rel='stylesheet' href='/static/style.css' type='text/css' />
+</head>
+  <body>
+    <h1>Contributing: Log in</h1>
+
+    {% if user %}
+       <p>Hello, <b>{{ user.email }}</b>.</p>
+    {% else %]
+       <p>Not logged in.</p>
+    {% endif %}
+
+    <p>Choose your authentication mechanism:<p>
+
+      <form method='/s/startopenid' method='POST'>
+        <div style='margin: 2em 0 2em 0'>
+          <img src='/static/openid-logo2.png' width='112' height='36' alt='OpenID' align='absmiddle' /><br/>
+          <input type='text' name='openid_url' id='openid_url' size='40' />
+          <input type='submit' name='use_openid' value='Log in' />
+</nobr></div>
+       </form>
+
+          <div style='margin: 2em 0 2em 0'>
+            <img src='/static/google-logo.png' width='99' height='36' alt='Google' align='absmiddle' /><br/>
+            <a href='{{ google_login_url }}'>Log in</a> with your Google Account.
+         </div>
+  </body>
+</html>

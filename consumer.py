@@ -379,7 +379,7 @@ class FinishHandler(Handler):
 # Map URLs to our RequestHandler subclasses above
 _URLS = [
   ('/s/openid', FrontPage),
-  ('/s/login', LoginHandler),
+  ('/s/startopenid', LoginHandler),
   ('/s/finish', FinishHandler),
 ]
 
