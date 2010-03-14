@@ -26,9 +26,25 @@ class MainHandler(webapp.RequestHandler):
     self.response.out.write('Hello world!')
 
 
+class SiteHandler(webapp.RequestHandler):
+
+  def get(self):
+    self.response.out.write("I'm a site admin page.")
+
+
+class ProjectHandler(webapp.RequestHandler):
+
+  def get(self, project):
+    self.response.out.write("I'm a project page for: %s" % project)
+
+
 def main():
-  application = webapp.WSGIApplication([('/', MainHandler)],
-                                       debug=True)
+  application = webapp.WSGIApplication([
+      ('/', MainHandler),
+      ('/s/.*', SiteHandler),
+      (r'/([a-z][a-z0-9_\.\-]*[a-z0-9])/?', ProjectHandler),
+      ],
+      debug=True)
   util.run_wsgi_app(application)
 
 
