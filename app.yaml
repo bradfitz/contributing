@@ -13,6 +13,9 @@ handlers:
 - url: /s/login
   script: main.py
 
+- url: /s/logout
+  script: main.py
+
 - url: /s/openid
   script: consumer.py
 

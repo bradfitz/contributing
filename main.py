@@ -17,6 +17,7 @@
 
 import os
 import re
+import logging
 
 from google.appengine.api import users
 from google.appengine.ext import db
@@ -27,16 +28,37 @@ from google.appengine.ext.webapp import util
 import models
 
 
+class User(object):
+  def __init__(self, google_user=None, openid_user=None):
+    self.google_user = google_user
+    self.openid_user = openid_user
+
+  @property
+  def display_name(self):
+    if self.google_user:
+      return self.google_user.email
+    if self.openid_user:
+      return "(openid user)"
+    return "Unknown user type"
+
+  def log_out(self, handler, next_url):
+    if self.google_user:
+      handler.redirect(users.create_logout_url(next_url))
+      return
+    handler.response.headers.add_header(
+      'Set-Cookie', 'session=')
+    handler.redirect(next_url)
 
 
 def GetCurrentUser(request):
   """Returns a User entity (OpenID or Google) or None."""
   user = users.get_current_user()
   if user:
-    return user
-  session_id = self.request.cookies.get('session', '')
+    return User(google_user=user)
+  session_id = request.cookies.get('session', '')
   if not session_id:
     return None
+  return User(openid_user=session_id)  # hack
   
   
 class MainHandler(webapp.RequestHandler):
@@ -57,8 +79,12 @@ class SiteHandler(webapp.RequestHandler):
 class LoginHandler(webapp.RequestHandler):
 
   def get(self):
-    user = users.get_current_user()
-    google_login_url = users.create_login_url('/')
+    next_url = self.request.get("next")
+    if not re.match(r'^/[\w/]*$', next_url):
+      next_url = '/'
+    #logging.info("next_url: %s", next_url)
+    user = GetCurrentUser(self.request)
+    google_login_url = users.create_login_url(next_url)
     template_values = {
       "user": user,
       "google_login_url": google_login_url,
@@ -66,12 +92,24 @@ class LoginHandler(webapp.RequestHandler):
     self.response.out.write(template.render("login.html", template_values))
 
 
+class LogoutHandler(webapp.RequestHandler):
+  def get(self):
+    next_url = self.request.get("next")
+    if re.match(r'^/[\w/]*$', next_url):
+      next_url = '/'
+    user = GetCurrentUser(self.request)
+    if user:
+      user.log_out(self, next_url)
+    else:
+      self.redirect(next_url)
+
+
 class CreateHandler(webapp.RequestHandler):
 
   def get(self):
-    user = users.get_current_user()
+    user = GetCurrentUser(self.request)
     if not user:
-      # enforced in app.yaml
+      self.redirect('/s/login?next=/s/create')
       return
     template_values = {
       "user": user,
@@ -79,9 +117,10 @@ class CreateHandler(webapp.RequestHandler):
     self.response.out.write(template.render("create.html", template_values))
 
   def post(self):
-    user = users.get_current_user()
+    user = GetCurrentUser(self.request)
     if not user:
-      return  # enforced in app.yaml anyway
+      self.redirect('/s/login?next=/s/create')
+      return
     def error(msg):
       self.response.out.write("Error creating project:<ul><li>%s</li></ul>." %
                               msg)
@@ -105,7 +144,7 @@ class CreateHandler(webapp.RequestHandler):
 class ProjectHandler(webapp.RequestHandler):
 
   def get(self, project_key):
-    user = users.get_current_user()
+    user = GetCurrentUser(self.request)
     project = models.Project.get_by_key_name(project_key)
     if not project:
       self.response.out.write(
@@ -123,6 +162,7 @@ def main():
       ('/', MainHandler),
       ('/s/create', CreateHandler),
       ('/s/login', LoginHandler),
+      ('/s/logout', LogoutHandler),
       ('/s/.*', SiteHandler),
       (r'/([a-z][a-z0-9\.\-]*[a-z0-9])/?', ProjectHandler),
       ],

@@ -7,8 +7,8 @@
     <h1>Contributing: Log in</h1>
 
     {% if user %}
-       <p>Hello, <b>{{ user.email }}</b>.</p>
-    {% else %]
+       <p>Hello, <b>{{ user.display_name }}</b>.  <a href="/s/logout">Log out</a>.</p>
+    {% else %}
        <p>Not logged in.</p>
     {% endif %}
 
