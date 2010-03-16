@@ -28,37 +28,15 @@ from google.appengine.ext.webapp import util
 import models
 
 
-class User(object):
-  def __init__(self, google_user=None, openid_user=None):
-    self.google_user = google_user
-    self.openid_user = openid_user
-
-  @property
-  def display_name(self):
-    if self.google_user:
-      return self.google_user.email
-    if self.openid_user:
-      return "(openid user)"
-    return "Unknown user type"
-
-  def log_out(self, handler, next_url):
-    if self.google_user:
-      handler.redirect(users.create_logout_url(next_url))
-      return
-    handler.response.headers.add_header(
-      'Set-Cookie', 'session=')
-    handler.redirect(next_url)
-
-
 def GetCurrentUser(request):
   """Returns a User entity (OpenID or Google) or None."""
   user = users.get_current_user()
   if user:
-    return User(google_user=user)
+    return models.User(google_user=user)
   session_id = request.cookies.get('session', '')
   if not session_id:
     return None
-  return User(openid_user=session_id)  # hack
+  return models.User(openid_user=session_id)  # hack
   
   
 class IndexHandler(webapp.RequestHandler):
@@ -100,7 +78,7 @@ class LogoutHandler(webapp.RequestHandler):
       next_url = '/'
     user = GetCurrentUser(self.request)
     if user:
-      user.log_out(self, next_url)
+      user.LogOut(self, next_url)
     else:
       self.redirect(next_url)
 
@@ -136,6 +114,7 @@ class CreateHandler(webapp.RequestHandler):
     if project:
       return error("Project already exists: <a href='/%s'>%s</a>" %
                    (project_key, project_key))
+    user = user.GetOrCreateFromDatastore()
     project = models.Project(key_name=project_key,
                              owner=user)
     project.put()

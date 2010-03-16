@@ -18,19 +18,53 @@
 from google.appengine.api import users
 from google.appengine.ext import db
 
+import sha
+
+SALT = 'Contributing!'
 
 class User(db.Model):
   """A user's global state, not specific to a project."""
-  user = db.UserProperty(required=True)
+  # One of these will be set:
+  google_user = db.UserProperty(indexed=True, required=False)
+  openid_user = db.StringProperty(indexed=True, required=False)
+
   url = db.StringProperty(indexed=False)
   last_login = db.DateProperty()
-  
+
+  @property
+  def display_name(self):
+    if self.google_user:
+      return self.google_user.email
+    if self.openid_user:
+      return self.openid_user
+    return "Unknown user type"
+
+  def LogOut(self, handler, next_url):
+    if self.google_user:
+      handler.redirect(users.create_logout_url(next_url))
+      return
+    handler.response.headers.add_header(
+      'Set-Cookie', 'session=')
+    handler.redirect(next_url)
+
+  @property
+  def sha1_key(self):
+    if self.google_user:
+      return sha.sha(self.google_user.email() + SALT).hexdigest()[0:8]
+    if self.openid_user:
+      return sha.sha(self.openid_user() + SALT).hexdigest()[0:8]
+    return Exception("unknown user type")
+
+  def GetOrCreateFromDatastore(self):
+    return User.get_or_insert(self.sha1_key,
+                              google_user=self.google_user,
+                              openid_user=self.openid_user)
 
 
 class Project(db.Model):
   """A project which can be contributed to, with its metadata."""
   pretty_name = db.StringProperty(required=False)
-  owner = db.UserProperty(required=True)
+  owner = db.ReferenceProperty(User, required=True)
 
   # main URL (String)
   # main version control (String)
