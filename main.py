@@ -61,11 +61,12 @@ def GetCurrentUser(request):
   return User(openid_user=session_id)  # hack
   
   
-class MainHandler(webapp.RequestHandler):
+class IndexHandler(webapp.RequestHandler):
 
   def get(self):
+    user = GetCurrentUser(self.request)
     template_values = {
-      "foo": "bar",
+      "user": user,
     }
     self.response.out.write(template.render("index.html", template_values))
 
@@ -147,9 +148,7 @@ class ProjectHandler(webapp.RequestHandler):
     user = GetCurrentUser(self.request)
     project = models.Project.get_by_key_name(project_key)
     if not project:
-      self.response.out.write(
-        "Project doesn't exist.  <a href='/s/create'>Create it</a>?")
-      return
+      self.response.set_status(404)
     template_values = {
       "user": user,
       "project": project,
@@ -159,7 +158,7 @@ class ProjectHandler(webapp.RequestHandler):
 
 def main():
   application = webapp.WSGIApplication([
-      ('/', MainHandler),
+      ('/', IndexHandler),
       ('/s/create', CreateHandler),
       ('/s/login', LoginHandler),
       ('/s/logout', LogoutHandler),

@@ -1,10 +1,7 @@
-<html>
-<head>
-  <title>Create project - Contributing</title>
-  <link rel='stylesheet' href='/static/style.css' type='text/css' />
-</head>
-  <body>
-    <h1>Contributing: Create Project</h1>
+{% extends "base.html" %}
+{% block headtitle %}Create Project - Contributing{% endblock %}
+{% block title %}Contributing: Create Project{% endblock %}
+{% block content %}
 
     <p>Hello, <b>{{ user.display_name }}</b>.</p>
 
@@ -15,5 +12,4 @@
       <input type='submit' value='Create' />
     </form>
 
-  </body>
-</html>
+{% endblock %}

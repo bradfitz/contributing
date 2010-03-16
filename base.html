@@ -1,0 +1,29 @@
+<html>
+<head>
+  <title>{% block headtitle %}{% endblock %}</title>
+  <link rel='stylesheet' href='/static/style.css' type='text/css' />
+</head>
+  <body>
+    <table style="border-bottom: 1px solid #77f" width="100%" id='topbar'>
+      <tr>
+        <td align='left'><a href='/'>Contributing</a></td>
+        <td align='right'>
+
+          {% if user %}
+            <p><b>{{ user.display_name }}</b> | <a href="/s/logout">Log out</a></p>
+          {% else %}
+            <p><a href="/s/login">Log in</a></p>
+          {% endif %}
+
+        </td>
+      </tr>
+    </table>
+    
+    <div id='content'>
+    <h1>{% block title %}{% endblock %}</h1>
+
+    {% block content %}{% endblock %}
+
+    </div>
+  </body>
+</html>

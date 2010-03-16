@@ -1,10 +1,7 @@
-<html>
-<head>
-  <title>Log in - Contributing</title>
-  <link rel='stylesheet' href='/static/style.css' type='text/css' />
-</head>
-  <body>
-    <h1>Contributing: Log in</h1>
+{% extends "base.html" %}
+{% block headtitle %}Log in - Contributing{% endblock %}
+{% block title %}Contributing: Log in</em>{% endblock %}
+{% block content %}
 
     {% if user %}
        <p>Hello, <b>{{ user.display_name }}</b>.  <a href="/s/logout">Log out</a>.</p>
@@ -26,5 +23,5 @@
             <img src='/static/google-logo.png' width='99' height='36' alt='Google' align='absmiddle' /><br/>
             <a href='{{ google_login_url }}'>Log in</a> with your Google Account.
          </div>
-  </body>
-</html>
+
+{% endblock %}

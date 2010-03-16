@@ -1,10 +1,21 @@
-<html>
-<head>
-  <title>Contributing to {{ project.display_name|escape }}</title>
-  <link rel='stylesheet' href='/static/style.css' type='text/css' />
-</head>
-  <body>
-    <h1>Contributing to <em>{{ project.display_name|escape }}</em></h1>
+{% extends "base.html" %}
+{% block headtitle %}
+  {% if project %}
+    Contributing to {{ project.display_name|escape }}
+  {% else %}
+    Project not found - Contributing
+  {% endif %}
+{% endblock %}
+{% block title %}
+  {% if project %}
+    Contributing to <em>{{ project.display_name|escape }}</em>
+  {% else %}
+    Project not found
+  {% endif %}
+{% endblock %}
+{% block content %}
+
+{% if project %}
 
     <table cellpadding='10'>
     <tr>
@@ -30,6 +41,8 @@
 
     </table>
 
+{% else %}
+  Project doesn't exist.  <a href='/s/create'>Create it</a>?
+{% endif %}
 
-  </body>
-</html>
+{% endblock %}
