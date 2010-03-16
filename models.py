@@ -52,7 +52,7 @@ class User(db.Model):
     if self.google_user:
       return sha.sha(self.google_user.email() + SALT).hexdigest()[0:8]
     if self.openid_user:
-      return sha.sha(self.openid_user() + SALT).hexdigest()[0:8]
+      return sha.sha(self.openid_user + SALT).hexdigest()[0:8]
     return Exception("unknown user type")
 
   def GetOrCreateFromDatastore(self):

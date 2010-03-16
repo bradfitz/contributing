@@ -25,6 +25,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp import util
 
+import consumer
 import models
 
 
@@ -36,9 +37,12 @@ def GetCurrentUser(request):
   session_id = request.cookies.get('session', '')
   if not session_id:
     return None
-  return models.User(openid_user=session_id)  # hack
-  
-  
+  login = consumer.Login.get_by_key_name(session_id)
+  if not login:
+    return None
+  return models.User(openid_user=login.claimed_id)
+
+
 class IndexHandler(webapp.RequestHandler):
 
   def get(self):

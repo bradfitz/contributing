@@ -73,7 +73,6 @@ class Session(db.Expando):
   """An in-progress OpenID login."""
   claimed_id = db.StringProperty()
   server_url = db.LinkProperty()
-  store_and_display = db.BooleanProperty()
 
 
 class Login(db.Model):
@@ -295,13 +294,13 @@ class FrontPage(Handler):
     self.render()
 
 
-class LoginHandler(Handler):
+class StartHandler(Handler):
   """Handles a POST response to the OpenID login form."""
 
   def post(self):
     """Handles login requests."""
     logging.info(self.args_to_dict())
-    openid_url = self.request.get('openid')
+    openid_url = self.request.get('openid_url')
     if not openid_url:
       self.report_error('Please enter an OpenID URL.')
       return
@@ -321,7 +320,6 @@ class LoginHandler(Handler):
 
     self.session.claimed_id = auth_request.endpoint.claimed_id
     self.session.server_url = auth_request.endpoint.server_url
-    self.session.store_and_display = self.request.get('display', 'no') != 'no'
     self.store_session()
 
     sreg_request = sreg.SRegRequest(optional=['nickname', 'fullname', 'email'])
@@ -385,13 +383,17 @@ class FinishHandler(Handler):
                   session=self.session.key())
     login.put()
 
-    self.render(locals())
+    self.response.headers.add_header('Set-Cookie',
+                                     'session=%s; path=/' % session_id)
+
+    # TODO(bradfitz: redirect to proper 'next' URL
+    self.redirect('/')
 
 
 # Map URLs to our RequestHandler subclasses above
 _URLS = [
   ('/s/openid', FrontPage),
-  ('/s/startopenid', LoginHandler),
+  ('/s/startopenid', StartHandler),
   ('/s/finish', FinishHandler),
 ]
 
