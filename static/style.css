@@ -19,3 +19,8 @@ body {
   text-decoration: none;
   color: #000;
 }
+
+table .f {
+  font-weight: bold;
+  color: #676;
+}

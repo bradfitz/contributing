@@ -88,6 +88,7 @@ class Project(db.Model):
   how_to = db.TextProperty(default="")
   code_repo = db.StringProperty(indexed=False, default="")
   home_page = db.StringProperty(indexed=False, default="")
+  bug_tracker = db.StringProperty(indexed=False, default="")
 
   @property
   def name(self):

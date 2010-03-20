@@ -28,48 +28,59 @@
 
     <table cellpadding='10' border='0'>
     <tr>
-      <td align=right>Project homepage:</td>
+      <td align='right' class='f'>Project homepage:</td>
       <td>
       {% if edit_mode %}
          <input name='home_page' value="{{ project.home_page|escape }}" size='40' />
       {% else %}
-         <a href="{{ project.home_page|escape }}">{{ project.home_page|escape }}</a>
+         {{ project.home_page|linkify }}
       {% endif %}
       </td>
     </tr>
     <tr>
-      <td align=right><nobr>Code repository:</nobr></td>
+      <td align='right' class='f'><nobr>Code repository:</nobr></td>
       <td>
       {% if edit_mode %}
          <input name='code_repo' value="{{ project.code_repo|escape }}" size='40' />
       {% else %}
-         <a href="{{ project.code_repo|escape }}">{{ project.code_repo|escape }}</a>
+         {{ project.code_repo|linkify }}
       {% endif %}
       </td>
     </tr>
+    <tr>
+      <td align='right' class='f'><nobr>Bug Tracker:</nobr></td>
+      <td>
+      {% if edit_mode %}
+         <input name='bug_tracker' value="{{ project.bug_tracker|escape }}" size='40' />
+      {% else %}
+         {{ project.bug_tracker|linkify }}
+      {% endif %}
+      </td>
+    </tr>
+
     <tr valign='top'>
-      <td align=right>How to submit patches:</td>
+      <td align='right' class='f'>How to submit patches:</td>
       <td>
       {% if edit_mode %}
         <textarea name='how_to' rows='10' cols='40'>{{ project.how_to|escape }}</textarea>
       {% else %}
-        {{ how_to_html }}
+        {{ project.how_to|linkify }}
       {% endif %}
       </td>
     </tr>
 
      {% if edit_mode %}
          <tr valign='bottom'>
-           <td align=right></td>
+           <td align='right'></td>
            <td><input type='submit' value="Save" /></td>
          </tr>
      {% else %}
          <tr valign='bottom'>
-          <td align=right><nobr>Maintainer of this</nobr><br/><nobr>metadata page:</nobr></td>
+          <td align='right' class='f'><nobr>Maintainer of this</nobr><br/><nobr>metadata page:</nobr></td>
           <td><a href="{{ project.owner.profile_page_url|escape }}">{{ project.owner.public_name|escape }}</a></td>
          </tr>
          <tr valign='bottom'>
-           <td align=right>Last modified:</td>
+           <td align='right' class='f'>Last modified:</td>
            <td>{{ project.last_edit_short }}</td>
          </tr>
      {% endif %}

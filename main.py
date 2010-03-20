@@ -27,6 +27,9 @@ from google.appengine.ext.webapp import util
 
 import consumer
 import models
+import filters
+
+webapp.template.register_template_library('filters')
 
 
 def GetCurrentUser(request):
@@ -168,20 +171,12 @@ class ProjectHandler(webapp.RequestHandler):
     can_edit = user and project and user.sha1_key == project.owner.sha1_key
     edit_mode = can_edit and (self.request.get('mode') == "edit")
 
-    how_to_html = ""
-    if project and project.how_to:
-      how_to_html = project.how_to.replace('<', '&lt;').replace('>', '&gt;').replace("\n", '<br/>\n')
-      how_to_html = re.sub(r'\b(https?://[\w\-\/\?\&\=\.]+)',
-                           lambda x: "<a href='%s'>%s</a>" % (x.group(1), x.group(1)),
-                           how_to_html)
-
     template_values = {
       "user": user,
       "project": project,
       "edit_mode": edit_mode,
       "can_edit": can_edit,
       "project_key": project_key,
-      "how_to_html": how_to_html,
     }
     self.response.out.write(template.render("project.html", template_values))
 
@@ -205,6 +200,7 @@ class ProjectEditHandler(webapp.RequestHandler):
     project.how_to = self.request.get("how_to")
     project.code_repo = self.request.get("code_repo")
     project.home_page = self.request.get("home_page")
+    project.bug_tracker = self.request.get("bug_tracker")
     project.put()
     self.redirect('/' + project_key)
 
