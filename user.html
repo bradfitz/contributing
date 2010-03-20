@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block headtitle %}
+   User Profile
+{% endblock %}
+{% block title %}
+  User <em>{{ profile_user.public_name|escape }}</em>
+{% endblock %}
+{% block content %}
+
+{% if can_edit and not edit_mode %}
+[<a href="?mode=edit">edit</a>]
+{% endif %}
+
+<p><b>Last login to Contributing:</b> {{ profile_user.last_login_short }}</p>
+
+{% if edit_mode %}
+<form method='POST' action='/s/edituser'>
+</form>
+{% endif %}
+
+<pre>
+
+
+
+
+TODO(bradfitz):
+* list of projects users maintains metadata for
+* rel=me URL outbound?
+* contact URL?
+* public name? public email? really don't want to turn this
+  into a social networking site, though.  but should be
+  a way to bug maintainers to update stuff.</pre>
+
+{% endblock %}

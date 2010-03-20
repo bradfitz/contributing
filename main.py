@@ -65,9 +65,8 @@ class LoginHandler(webapp.RequestHandler):
     next_url = self.request.get("next")
     if not re.match(r'^/[\w/]*$', next_url):
       next_url = '/'
-    #logging.info("next_url: %s", next_url)
     user = GetCurrentUser(self.request)
-    google_login_url = users.create_login_url(next_url)
+    google_login_url = users.create_login_url('/s/notelogin?next=' + next_url)
     template_values = {
       "user": user,
       "google_login_url": google_login_url,
@@ -75,16 +74,50 @@ class LoginHandler(webapp.RequestHandler):
     self.response.out.write(template.render("login.html", template_values))
 
 
+class NoteLoginHandler(webapp.RequestHandler):
+  """Update a just-logged-in user's last_login property and send them along."""
+  
+  def get(self):
+    next_url = self.request.get("next")
+    if not re.match(r'^/[\w/]*$', next_url):
+      next_url = '/'
+    user = GetCurrentUser(self.request)
+    if user:
+      user = user.GetOrCreateFromDatastore()
+      user.put()  # updates time
+    self.redirect(next_url)
+
+
 class LogoutHandler(webapp.RequestHandler):
   def get(self):
     next_url = self.request.get("next")
-    if re.match(r'^/[\w/]*$', next_url):
+    if not re.match(r'^/[\w/]*$', next_url):
       next_url = '/'
     user = GetCurrentUser(self.request)
     if user:
       user.LogOut(self, next_url)
     else:
       self.redirect(next_url)
+
+
+class UserHandler(webapp.RequestHandler):
+
+  def get(self, user_key):
+    user = GetCurrentUser(self.request)
+    profile_user = models.User.get_by_key_name(user_key)
+    if not profile_user:
+      self.response.set_status(404)
+      return
+    can_edit = user and user.sha1_key == profile_user.sha1_key
+    edit_mode = can_edit and (self.request.get('mode') == "edit")
+    template_values = {
+      "user": user,
+      "profile_user": profile_user,
+      "edit_mode": edit_mode,
+      "can_edit": can_edit,
+      "user_key": user_key,
+    }
+    self.response.out.write(template.render("user.html", template_values))
 
 
 class CreateHandler(webapp.RequestHandler):
@@ -132,7 +165,7 @@ class ProjectHandler(webapp.RequestHandler):
     project = models.Project.get_by_key_name(project_key)
     if not project:
       self.response.set_status(404)
-    can_edit = user and user.sha1_key == project.owner.sha1_key
+    can_edit = user and project and user.sha1_key == project.owner.sha1_key
     edit_mode = can_edit and (self.request.get('mode') == "edit")
     template_values = {
       "user": user,
@@ -174,7 +207,9 @@ def main():
       ('/s/login', LoginHandler),
       ('/s/logout', LogoutHandler),
       ('/s/editproject', ProjectEditHandler),
+      ('/s/notelogin', NoteLoginHandler),
       ('/s/.*', SiteHandler),
+      (r'/u/([a-f0-9]{6,})', UserHandler),
       (r'/([a-z][a-z0-9\.\-]*[a-z0-9])/?', ProjectHandler),
       ],
       debug=True)

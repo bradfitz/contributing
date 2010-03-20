@@ -18,6 +18,7 @@
 from google.appengine.api import users
 from google.appengine.ext import db
 
+import logging
 import sha
 
 SALT = 'Contributing!'
@@ -29,7 +30,11 @@ class User(db.Model):
   openid_user = db.StringProperty(indexed=True, required=False)
 
   url = db.StringProperty(indexed=False)
-  last_login = db.DateProperty()
+  last_login = db.DateTimeProperty(auto_now=True)
+
+  @property
+  def last_login_short(self):
+    return str(self.last_login)[0:10]
 
   @property
   def display_name(self):
@@ -65,7 +70,7 @@ class User(db.Model):
       handler.redirect(users.create_logout_url(next_url))
       return
     handler.response.headers.add_header(
-      'Set-Cookie', 'session=')
+      'Set-Cookie', 'session=; path=/')
     handler.redirect(next_url)
 
   def GetOrCreateFromDatastore(self):
@@ -93,6 +98,10 @@ class Project(db.Model):
     if self.pretty_name:
       return self.pretty_name
     return self.name
+
+  @property
+  def last_edit_short(self):
+    return str(self.last_edit)[0:10]
 
 
 class Contributor(db.Model):

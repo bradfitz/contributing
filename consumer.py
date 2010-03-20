@@ -61,6 +61,8 @@ import store
 import string
 import random
 
+import models
+
 # Set to True if stack traces should be shown in the browser, etc.
 _DEBUG = False
 
@@ -382,6 +384,10 @@ class FinishHandler(Handler):
                   server_url=self.session.server_url,
                   session=self.session.key())
     login.put()
+
+    # update the login time
+    user = models.User(openid_user=login.claimed_id).GetOrCreateFromDatastore()
+    user.put()
 
     self.response.headers.add_header('Set-Cookie',
                                      'session=%s; path=/' % session_id)

@@ -10,7 +10,7 @@
         <td align='right'>
 
           {% if user %}
-            <p><b>{{ user.display_name }}</b> | <a href="/s/logout">Log out</a></p>
+            <p><a href='{{ user.profile_page_url }}'><b>{{ user.display_name }}</b></a> | <a href="/s/logout">Log out</a></p>
           {% else %}
             <p><a href="/s/login">Log in</a></p>
           {% endif %}

@@ -38,7 +38,7 @@
       </td>
     </tr>
     <tr>
-      <td align=right>Code repository:</td>
+      <td align=right><nobr>Code repository:</nobr></td>
       <td>
       {% if edit_mode %}
          <input name='code_repo' value="{{ project.code_repo|escape }}" size='40' />
@@ -65,12 +65,12 @@
          </tr>
      {% else %}
          <tr valign='bottom'>
-          <td align=right>Maintainer of this<br/>metadata page:</td>
+          <td align=right><nobr>Maintainer of this</nobr><br/><nobr>metadata page:</nobr></td>
           <td><a href="{{ project.owner.profile_page_url|escape }}">{{ project.owner.public_name|escape }}</a></td>
          </tr>
          <tr valign='bottom'>
-           <td align=right>Last modified time:</td>
-           <td>{{ project.last_edit }} UTC</td>
+           <td align=right>Last modified:</td>
+           <td>{{ project.last_edit_short }}</td>
          </tr>
      {% endif %}
 
