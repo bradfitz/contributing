@@ -17,29 +17,69 @@
 
 {% if project %}
 
-    <table cellpadding='10'>
+{% if can_edit and not edit_mode %}
+[<a href="?mode=edit">edit</a>]
+{% endif %}
+
+{% if edit_mode %}
+<form method='POST' action='/s/editproject'>
+<input type='hidden' name='project' value='{{project_key}}' />
+{% endif %}
+
+    <table cellpadding='10' border='0'>
     <tr>
       <td align=right>Project homepage:</td>
-      <td><a href="{{ project.home_page|escape }}">{{ project.home_page|escape }}</a></td>
+      <td>
+      {% if edit_mode %}
+         <input name='home_page' value="{{ project.home_page|escape }}" size='40' />
+      {% else %}
+         <a href="{{ project.home_page|escape }}">{{ project.home_page|escape }}</a>
+      {% endif %}
+      </td>
     </tr>
     <tr>
       <td align=right>Code repository:</td>
-      <td><a href="{{ project.code_repo|escape }}">{{ project.code_repo|escape }}</a></td>
-    </tr>
-    <tr>
-      <td align=right>Style guide:</td>
-      <td><a href="{{ project.style_guide|escape }}">{{ project.style_guide|escape }}</a></td>
+      <td>
+      {% if edit_mode %}
+         <input name='code_repo' value="{{ project.code_repo|escape }}" size='40' />
+      {% else %}
+         <a href="{{ project.code_repo|escape }}">{{ project.code_repo|escape }}</a>
+      {% endif %}
+      </td>
     </tr>
     <tr valign='top'>
       <td align=right>How to submit patches:</td>
-      <td>{{ project.how_to|escape }}</td>
-    </tr>
-    <tr valign='bottom'>
-      <td align=right>Maintainer of this<br/>metadata page:</td>
-      <td><a href="{{ project.style_guide|escape }}">{{ project.style_guide|escape }}</a></td>
+      <td>
+      {% if edit_mode %}
+        <textarea name='how_to' rows='10' cols='40'>{{ project.how_to|escape }}</textarea>
+      {% else %}
+        {{ project.how_to|escape }}
+      {% endif %}
+      </td>
     </tr>
 
+     {% if edit_mode %}
+         <tr valign='bottom'>
+           <td align=right></td>
+           <td><input type='submit' value="Save" /></td>
+         </tr>
+     {% else %}
+         <tr valign='bottom'>
+          <td align=right>Maintainer of this<br/>metadata page:</td>
+          <td><a href="{{ project.owner.profile_page_url|escape }}">{{ project.owner.public_name|escape }}</a></td>
+         </tr>
+         <tr valign='bottom'>
+           <td align=right>Last modified time:</td>
+           <td>{{ project.last_edit }} UTC</td>
+         </tr>
+     {% endif %}
+
     </table>
+
+{% if edit_mode %}
+</form>
+{% endif %}
+     
 
 {% else %}
   Project doesn't exist.  <a href='/s/create'>Create it</a>?

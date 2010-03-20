@@ -132,11 +132,39 @@ class ProjectHandler(webapp.RequestHandler):
     project = models.Project.get_by_key_name(project_key)
     if not project:
       self.response.set_status(404)
+    can_edit = user and user.sha1_key == project.owner.sha1_key
+    edit_mode = can_edit and (self.request.get('mode') == "edit")
     template_values = {
       "user": user,
       "project": project,
+      "edit_mode": edit_mode,
+      "can_edit": can_edit,
+      "project_key": project_key,
     }
     self.response.out.write(template.render("project.html", template_values))
+
+
+class ProjectEditHandler(webapp.RequestHandler):
+  """Handles POSTs to edit a project."""
+
+  def post(self):
+    user = GetCurrentUser(self.request)
+    project_key = self.request.get('project')
+    logging.info("project key: %s", project_key)
+    project = models.Project.get_by_key_name(project_key)
+    logging.info("project: %s", project)
+    if not project:
+      self.response.set_status(404)
+      return
+    can_edit = user and user.sha1_key == project.owner.sha1_key
+    if not can_edit:
+      self.response.set_status(403)
+      return
+    project.how_to = self.request.get("how_to")
+    project.code_repo = self.request.get("code_repo")
+    project.home_page = self.request.get("home_page")
+    project.put()
+    self.redirect('/' + project_key)
 
 
 def main():
@@ -145,6 +173,7 @@ def main():
       ('/s/create', CreateHandler),
       ('/s/login', LoginHandler),
       ('/s/logout', LogoutHandler),
+      ('/s/editproject', ProjectEditHandler),
       ('/s/.*', SiteHandler),
       (r'/([a-z][a-z0-9\.\-]*[a-z0-9])/?', ProjectHandler),
       ],

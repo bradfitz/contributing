@@ -39,13 +39,18 @@ class User(db.Model):
       return self.openid_user
     return "Unknown user type"
 
-  def LogOut(self, handler, next_url):
+  @property
+  def public_name(self):
     if self.google_user:
-      handler.redirect(users.create_logout_url(next_url))
-      return
-    handler.response.headers.add_header(
-      'Set-Cookie', 'session=')
-    handler.redirect(next_url)
+      email = self.google_user.email()
+      return email[0:email.find('@')+1] + "..."
+    if self.openid_user:
+      return self.openid_user
+    return "Unknown user type"
+
+  @property
+  def profile_page_url(self):
+    return "/u/" + self.sha1_key
 
   @property
   def sha1_key(self):
@@ -54,6 +59,14 @@ class User(db.Model):
     if self.openid_user:
       return sha.sha(self.openid_user + SALT).hexdigest()[0:8]
     return Exception("unknown user type")
+
+  def LogOut(self, handler, next_url):
+    if self.google_user:
+      handler.redirect(users.create_logout_url(next_url))
+      return
+    handler.response.headers.add_header(
+      'Set-Cookie', 'session=')
+    handler.redirect(next_url)
 
   def GetOrCreateFromDatastore(self):
     return User.get_or_insert(self.sha1_key,
@@ -65,11 +78,11 @@ class Project(db.Model):
   """A project which can be contributed to, with its metadata."""
   pretty_name = db.StringProperty(required=False)
   owner = db.ReferenceProperty(User, required=True)
+  last_edit = db.DateTimeProperty(auto_now=True)
 
-  # main URL (String)
-  # main version control (String)
-  # how to send patches (text box)
-  # other owners? (list/map User -> LastSeen, involvement level)
+  how_to = db.TextProperty(default="")
+  code_repo = db.StringProperty(indexed=False, default="")
+  home_page = db.StringProperty(indexed=False, default="")
 
   @property
   def name(self):
