@@ -53,7 +53,7 @@
       {% if edit_mode %}
         <textarea name='how_to' rows='10' cols='40'>{{ project.how_to|escape }}</textarea>
       {% else %}
-        {{ project.how_to|escape }}
+        {{ how_to_html }}
       {% endif %}
       </td>
     </tr>

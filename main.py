@@ -167,12 +167,21 @@ class ProjectHandler(webapp.RequestHandler):
       self.response.set_status(404)
     can_edit = user and project and user.sha1_key == project.owner.sha1_key
     edit_mode = can_edit and (self.request.get('mode') == "edit")
+
+    how_to_html = project.how_to
+    if how_to_html:
+      how_to_html = how_to_html.replace('<', '&lt;').replace('>', '&gt;').replace("\n", '<br/>\n')
+      how_to_html = re.sub(r'\b(https?://[\w\-\/\?\&\=\.]+)',
+                           lambda x: "<a href='%s'>%s</a>" % (x.group(1), x.group(1)),
+                           how_to_html)
+
     template_values = {
       "user": user,
       "project": project,
       "edit_mode": edit_mode,
       "can_edit": can_edit,
       "project_key": project_key,
+      "how_to_html": how_to_html,
     }
     self.response.out.write(template.render("project.html", template_values))
 
