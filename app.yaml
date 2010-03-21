@@ -25,5 +25,9 @@ handlers:
 - url: /s/finish
   script: consumer.py
 
+- url: /favicon.ico
+  static_files: static/favicon.ico
+  upload: static/favicon.ico
+
 - url: .*
   script: main.py
