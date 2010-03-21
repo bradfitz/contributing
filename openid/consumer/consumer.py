@@ -190,9 +190,11 @@ USING THIS LIBRARY
 
 import cgi
 import copy
+import logging
 from urlparse import urlparse, urldefrag
 
 from openid import fetchers
+from openid import oidutil
 
 from openid.consumer.discover import discover, OpenIDServiceEndpoint, \
      DiscoveryFailure, OPENID_1_0_TYPE, OPENID_1_1_TYPE, OPENID_2_0_TYPE
@@ -211,6 +213,14 @@ __all__ = ['AuthRequest', 'Consumer', 'SuccessResponse',
            'SetupNeededResponse', 'CancelResponse', 'FailureResponse',
            'SUCCESS', 'FAILURE', 'CANCEL', 'SETUP_NEEDED',
            ]
+
+
+def appEngineLoggingFunction(message, level=0):
+    # Level is unused.
+    logging.info(message)
+
+
+oidutil.log = appEngineLoggingFunction
 
 
 def makeKVPost(request_message, server_url):
