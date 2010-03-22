@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block headtitle %}
+   Browse Projects
+{% endblock %}
+{% block title %}
+  Browse Projects
+{% endblock %}
+{% block head %}
+<meta name="robots" content="noindex" />
+{% endblock %}
+{% block content %}
+
+<p>Some projects that are using <i>Contributing</i> ...</p>
+
+<ul>
+{% for p in projects %}
+  <li><a href="/{{ p.key.name }}" rel="nofollow">{{ p.key.name }}</a></li>
+{% endfor %}
+{% if next_page_project %}
+  <li><a href="/s/browse/?start={{ next_page_project.key.name }}" rel="nofollow"><i>next page...</i></a></li>
+{% endif %}
+</ul>
+
+{% endblock %}

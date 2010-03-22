@@ -219,6 +219,31 @@ class ProjectEditHandler(webapp.RequestHandler):
     self.redirect('/' + project_key)
 
 
+class BrowseHandler(webapp.RequestHandler):
+
+  def get(self):
+    user = GetCurrentUser(self.request)
+
+    projects = models.Project.all().order('__key__')
+    if self.request.get("start"):
+      projects = projects.filter('__key__ >=',
+                                 db.Key.from_path(models.Project.kind(),
+                                                  self.request.get("start")))
+    PAGE_SIZE = 25
+    projects = projects.fetch(PAGE_SIZE + 1)
+    next_page_project = None
+    if len(projects) > PAGE_SIZE:
+      next_page_project = projects[-1]
+      projects = projects[0:PAGE_SIZE]
+
+    template_values = {
+      "user": user,
+      "projects": projects,
+      "next_page_project": next_page_project,
+    }
+    self.response.out.write(template.render("browse.html", template_values))
+
+
 def main():
   application = webapp.WSGIApplication([
       ('/', IndexHandler),
@@ -227,6 +252,7 @@ def main():
       ('/s/logout', LogoutHandler),
       ('/s/editproject', ProjectEditHandler),
       ('/s/notelogin', NoteLoginHandler),
+      ('/s/browse/?', BrowseHandler),
       ('/s/.*', SiteHandler),
       (r'/u/([a-f0-9]{6,})', UserHandler),
       (r'/([a-z][a-z0-9\.\-]*[a-z0-9])/?', ProjectHandler),
