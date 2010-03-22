@@ -113,12 +113,26 @@ class UserHandler(webapp.RequestHandler):
       return
     can_edit = user and user.sha1_key == profile_user.sha1_key
     edit_mode = can_edit and (self.request.get('mode') == "edit")
+
+    # get all the projects that this user maintains metadata for
+    pquery = db.Query(models.Project, keys_only=True)
+    pquery.filter('owner =', profile_user)
+    projects = [key.name() for key in pquery.fetch(500)]
+
+    url = ""
+    if profile_user.openid_user:
+      url = profile_user.openid_user
+    elif profile_user.url:
+      url = profile_user.url
+
     template_values = {
-      "user": user,
-      "profile_user": profile_user,
+      "user": user,   # logged-in user, or None
       "edit_mode": edit_mode,
       "can_edit": can_edit,
-      "user_key": user_key,
+      "profile_user": profile_user,
+      "user_key": user_key,   # the sha1-ish thing
+      "projects": projects,   # list(str), of project keys
+      "url": url,
     }
     self.response.out.write(template.render("user.html", template_values))
 

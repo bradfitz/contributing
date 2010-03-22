@@ -11,24 +11,29 @@
 [<a href="?mode=edit">edit</a>]
 {% endif %}
 
-<p><b>Last login to Contributing:</b> {{ profile_user.last_login_short }}</p>
-
-{% if edit_mode %}
+{% if edit_mode %} <div style='margin-left: 2em; background:
+#ccc'><b><span style='color:red'>TODO:</span> edit mode; let user set
+URL (or extra URL, if OpenID), contact info (show email address to
+other logged-in users?), email address (of openid user), confirm
+email, ...</b></div>
 <form method='POST' action='/s/edituser'>
 </form>
 {% endif %}
 
-<pre>
+{% if url %}
+<p><b>URL:</b> <a href="{{ url|escape }}" rel="me">{{ url|escape }}</a></p>
+{% endif %}
 
+<p><b>Last login to Contributing:</b> {{ profile_user.last_login_short }}</p>
 
-
-
-TODO(bradfitz):
-* list of projects users maintains metadata for
-* rel=me URL outbound?
-* contact URL?
-* public name? public email? really don't want to turn this
-  into a social networking site, though.  but should be
-  a way to bug maintainers to update stuff.</pre>
+<p><b>Maintains contributing meta-data for:</b></p>
+<ul>
+{% for project_key in projects %}
+  <li><a href="/{{project_key}}">{{project_key}}</a></li>
+{% endfor %}
+{% if not projects %}
+  <li><i>(nothing)</i></li>
+{% endif %}
+</ul>
 
 {% endblock %}
