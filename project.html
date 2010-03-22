@@ -22,6 +22,10 @@
 {% endif %}
 
 {% if edit_mode %}
+
+<p><b>Note:</b> all fields are free-form text.  No HTML allowed, but
+fields auto-linkify any URL(s) and auto-add &lt;br/&gt; tags.</p>
+
 <form method='POST' action='/s/editproject'>
 <input type='hidden' name='project' value='{{project_key}}' />
 {% endif %}
@@ -31,7 +35,7 @@
       <td align='right' class='f'>Project homepage:</td>
       <td>
       {% if edit_mode %}
-         <input name='home_page' value="{{ project.home_page|escape }}" size='40' />
+         <input name='home_page' value="{{ project.home_page|escape }}" size='50' />
       {% else %}
          {{ project.home_page|linkify }}
       {% endif %}
@@ -41,7 +45,7 @@
       <td align='right' class='f'><nobr>Code repository:</nobr></td>
       <td>
       {% if edit_mode %}
-         <input name='code_repo' value="{{ project.code_repo|escape }}" size='40' />
+         <input name='code_repo' value="{{ project.code_repo|escape }}" size='50' />
       {% else %}
          {{ project.code_repo|linkify }}
       {% endif %}
@@ -51,7 +55,7 @@
       <td align='right' class='f'><nobr>Bug Tracker:</nobr></td>
       <td>
       {% if edit_mode %}
-         <input name='bug_tracker' value="{{ project.bug_tracker|escape }}" size='40' />
+         <input name='bug_tracker' value="{{ project.bug_tracker|escape }}" size='50' />
       {% else %}
          {{ project.bug_tracker|linkify }}
       {% endif %}
