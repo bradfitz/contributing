@@ -29,7 +29,7 @@ import consumer
 import models
 import filters
 
-webapp.template.register_template_library('filters')
+#webapp.template.register_template_library('filters')
 
 
 def GetCurrentUser(request):
@@ -53,7 +53,7 @@ class IndexHandler(webapp.RequestHandler):
     template_values = {
       "user": user,
     }
-    self.response.out.write(template.render("index.html", template_values))
+    self.response.out.write("<html>This site is now shut down. When I created it, I wrote:<blockquote>It's hosted on App Engine and without a domain name so it doesn't require any money to keep running and minimizes risks of it shutting down due to lack of funds or forgotten domain name renewals.</blockquote>I wanted to write code once and have it work forever. Well, what I didn't anticipate is that App Engine would require occasional maintenance on the project owner's behalf, to update to changes in App Engine. I have no interest in doing that. Sorry. Please use Google search to find contributing information, or just add contributing info to your project's site or Github repo.")
 
 
 class SiteHandler(webapp.RequestHandler):
@@ -246,16 +246,7 @@ class BrowseHandler(webapp.RequestHandler):
 
 def main():
   application = webapp.WSGIApplication([
-      ('/', IndexHandler),
-      ('/s/create', CreateHandler),
-      ('/s/login', LoginHandler),
-      ('/s/logout', LogoutHandler),
-      ('/s/editproject', ProjectEditHandler),
-      ('/s/notelogin', NoteLoginHandler),
-      ('/s/browse/?', BrowseHandler),
-      ('/s/.*', SiteHandler),
-      (r'/u/([a-f0-9]{6,})', UserHandler),
-      (r'/([a-z][a-z0-9\.\-]*[a-z0-9])/?', ProjectHandler),
+      ('/.*', IndexHandler),
       ],
       debug=True)
   util.run_wsgi_app(application)
